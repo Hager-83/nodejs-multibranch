@@ -6,22 +6,21 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Test') {
-            steps {
-                sh 'npm test'
-            }
-        }
-
         stage('Docker Build') {
             steps {
                 sh 'docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'docker run --rm ${IMAGE_NAME}:${BUILD_NUMBER} npm test'
             }
         }
 
@@ -35,7 +34,9 @@ pipeline {
                     )
                 ]) {
                     sh '''
-                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                        echo "$DOCKER_PASSWORD" | docker login \
+                            -u "$DOCKER_USERNAME" \
+                            --password-stdin
 
                         docker push ${IMAGE_NAME}:${BUILD_NUMBER}
 
@@ -52,16 +53,16 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline completed successfully!"
+            echo 'Pipeline completed successfully!'
             echo "Docker image: ${IMAGE_NAME}:${BUILD_NUMBER}"
         }
 
         failure {
-            echo "Pipeline failed!"
+            echo 'Pipeline failed!'
         }
 
         always {
-            echo "Pipeline finished."
+            echo 'Pipeline finished.'
         }
     }
 }
