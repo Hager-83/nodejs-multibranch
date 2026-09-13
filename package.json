@@ -1,0 +1,10 @@
+{
+  "name": "nodejs-multibranch",
+  "version": "1.0.0",
+  "description": "Simple Node.js application for Jenkins Multibranch Pipeline",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "node --test"
+  }
+}
